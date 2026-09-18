@@ -46,7 +46,9 @@ function normalizePhone(input) {
   if (!s) return '';
   if (s.startsWith('0')) s = s.replace(/^0+/, '');
   if (s.length === 10 && s.startsWith('3')) s = '57' + s;
-  if (s.startsWith('52') && !s.startsWith('521') && s.length >= 12) s = '521' + s.slice(2);
+  // WHATSAPP_MX_MODE=52 → keep 52… ; default/521 → rewrite MX mobile 52… → 521…
+  const mxMode = String(process.env.WHATSAPP_MX_MODE || '521').trim();
+  if (mxMode !== '52' && s.startsWith('52') && !s.startsWith('521') && s.length >= 12) s = '521' + s.slice(2);
   if (s.startsWith('54') && !s.startsWith('549') && s.length >= 11) s = '549' + s.slice(2);
   return s;
 }
@@ -222,20 +224,36 @@ export async function startBot() {
   };
 
   if (opcion === "2" && !state.creds.registered) {
-    setTimeout(async () => {
+    const printPairingCode = async () => {
       try {
-        if (!state.creds.registered) {
-          const pairing = await sock.requestPairingCode(phoneNumber);
-          const codeBot = pairing?.match(/.{1,4}/g)?.join("-") || pairing;
-          console.log('========================================')
-          console.log('CODIGO WHATSAPP (8 digitos):', codeBot)
-          console.log('WhatsApp → Dispositivos vinculados → Vincular con numero de telefono')
-          console.log('========================================')
-          console.log(chalk.bold.white(chalk.bgMagenta(`Código de emparejamiento:`)), chalk.bold.white(chalk.white(codeBot)));
-        }
+        if (state.creds.registered) return false;
+        console.log('[cloud] requestPairingCode para', phoneNumber)
+        const pairing = await sock.requestPairingCode(phoneNumber);
+        const raw = String(pairing || '').replace(/\W/g, '');
+        const codeBot = raw.match(/.{1,4}/g)?.join("-") || pairing;
+        console.log('========================================')
+        console.log('CODIGO WHATSAPP (8 digitos):', codeBot)
+        console.log('CODIGO SIN GUION (pega este):', raw)
+        console.log('Numero usado:', phoneNumber)
+        console.log('WhatsApp → Dispositivos vinculados → Vincular con numero de telefono')
+        console.log('========================================')
+        console.log(chalk.bold.white(chalk.bgMagenta(`Código de emparejamiento:`)), chalk.bold.white(chalk.white(codeBot)));
+        return true;
       } catch (err) {
         console.log(chalk.red("Error al generar código:"), err);
+        return false;
       }
+    };
+    setTimeout(async () => {
+      await printPairingCode();
+      const refresh = setInterval(async () => {
+        if (state.creds.registered || botReady) {
+          clearInterval(refresh);
+          return;
+        }
+        console.log('[cloud] Refrescando codigo de emparejamiento...')
+        await printPairingCode();
+      }, 50000);
     }, 3000);
   }
 
@@ -289,9 +307,17 @@ export async function startBot() {
     if (connection === "close") {
       const reason = lastDisconnect?.error?.output?.statusCode || 0;
       if ([DisconnectReason.loggedOut, DisconnectReason.forbidden, DisconnectReason.multideviceMismatch].includes(reason)) {
-        log.warn(`Principal desvinculado (${reason}) — limpiando sesión y reiniciando...`);
+        const wasRegistered = Boolean(state?.creds?.registered) || botReady;
+        log.warn(`Principal desvinculado (${reason}) — registered=${wasRegistered}`);
         botReady = false;
         isRestarting = false;
+        // Antes de vincular, no borres sesión a la primera: reintenta y saca código nuevo
+        if (!wasRegistered && reason === DisconnectReason.loggedOut) {
+          log.warn('Aun sin vincular — reintentando sin borrar disco (codigo nuevo en ~segundos)...');
+          setTimeout(startBot, 5000);
+          return;
+        }
+        log.warn('Limpiando sesión y reiniciando...');
         clearSession();
         process.exit(1);
       }
