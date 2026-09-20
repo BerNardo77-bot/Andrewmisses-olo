@@ -1,5 +1,7 @@
 # Luffy7 — Monkey D. Luffy Bot MD
 
+Version **1.1.15** — Northflank/WhatsApp: `#ytvideo` build **120 HD-long AVC** (H.264 ≤720p, remux `copy`+faststart, tope **20 min**, sin freeze por AV1). Hotfix play2.js. `#ttsearch` con texto plano (no letras fancy Unicode). Guía Northflank: `NORTHFLANK-WHATSAPP.md` en Andrewmisses-olo.
+
 Version **1.1.14** — Railway/Render: pairing por WHATSAPP_NUMBER (logs), Volume /data. Guia: RAILWAY-WHATSAPP.md
 
 Version **1.1.13** — #apk siempre muestra el link; si pesa >90 MB no intenta subir el archivo.
@@ -18,7 +20,7 @@ Version **1.1.6** — descargas en alta calidad (YouTube 1080, XVideos/XNXX HD).
 
 Version **1.1.5** — #menu: si el CDN del banner falla (429), manda el menu en texto. Opcional: #setbanner con una foto tuya.
 
-Bot de WhatsApp (Node.js + Baileys) para **BerNardo77-bot/Luffy7**.
+Bot de WhatsApp (Node.js + Baileys) para **BerNardo77-bot/Andrewmisses-olo** (fork Northflank / 5ª Dimensión).
 Basado en [nene504273/Monkey-D-luffy-Bot-MD](https://github.com/nene504273/Monkey-D-luffy-Bot-MD).
 
 Proyecto independiente; no afiliado a WhatsApp Inc.
@@ -140,3 +142,14 @@ En el grupo, un admin activa los comandos que vienen apagados:
 No activar antilink ni adminonly: esos bloquean.
 Spotify: dejar un espacio. Ejemplo: #sp https://open.spotify.com/track/...
 Confirmado por el usuario: los tres enable funcionan.
+
+
+## Northflank (AndrewWife)
+
+- Team: Brbot77's Team · Project: **Andrewgirlfriend** · Service: **AndrewWife**
+- Repo branch: `main` · Volume: `/data` · RAM recomendada: **512 MB+**
+- Número: `OWNER_NUMBER` / `WHATSAPP_NUMBER` = `5217571005124`
+- `#ytvideo`: tope **20 min**; logs `build 120 HD-long AVC`
+- `#ttsearch`: usar ASCII (`yauri records`), no ♫ / letras matemáticas
+- Si `#ytvideo` dice que no existe: mirar `Error cargando play2.js` en logs y Rebuild
+- Guía completa: ver `NORTHFLANK-WHATSAPP.md`
