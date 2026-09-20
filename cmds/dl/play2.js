@@ -163,7 +163,7 @@ async function downloadYoutubeWithYtDlp(videoUrl, { maxHeight = 720 } = {}) {
   throw new Error(last.slice(0, 180))
 }
 
-function isMp4function isMp4(buf) {
+function isMp4(buf) {
   if (!buf || buf.length < 12) return false
   return buf.slice(4, 8).toString() === 'ftyp'
 }
@@ -410,7 +410,7 @@ export default {
   command: ['play2', 'mp4', 'ytmp4', 'ytvideo', 'playvideo'],
   category: 'downloader',
   run: async ({ msg, sock, args }) => {
-    console.error('[ytvideo] build 119 HD-long AVC')
+    console.error('[ytvideo] build 119b HD-long AVC')
     try {
       if (!args[0]) {
         return msg.reply('《✧》 Por favor, menciona el nombre o URL del video que deseas descargar.')
