@@ -126,12 +126,12 @@ async function downloadYoutubeWithYtDlp(videoUrl) {
   if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR, { recursive: true })
   const base = path.join(TMP_DIR, "yt-" + Date.now())
   const outTpl = base + ".%(ext)s"
-  const common = ["--no-playlist", "--js-runtimes", "node", "-o", outTpl, videoUrl]
-  const fmtHd = "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/bv*[height<=1080]+ba/b[height<=1080]/best"
+  const common = ["--no-playlist", "--js-runtimes", "node", "--remote-components", "ejs:github", "-o", outTpl, videoUrl]
+  const fmtHd = "bv*[height<=720][ext=mp4]+ba[ext=m4a]/bv*[height<=720]+ba/b[height<=720]/best"
   const attempts = [
     ["yt-dlp", ["-f", fmtHd, "--merge-output-format", "mp4", ...common]],
-    ["yt-dlp", ["-f", "b[height<=1080]/b", "--extractor-args", "youtube:player_client=android", "--no-playlist", "-o", outTpl, videoUrl]],
-    ["python3", ["-m", "yt_dlp", "-f", fmtHd, "--merge-output-format", "mp4", "--no-playlist", "--js-runtimes", "node", "-o", outTpl, videoUrl]]
+    ["yt-dlp", ["-f", "b[height<=720]/b", "--extractor-args", "youtube:player_client=android", "--remote-components", "ejs:github", "--no-playlist", "-o", outTpl, videoUrl]],
+    ["python3", ["-m", "yt_dlp", "-f", fmtHd, "--merge-output-format", "mp4", "--no-playlist", "--js-runtimes", "node", "--remote-components", "ejs:github", "-o", outTpl, videoUrl]]
   ]
   let last = "yt-dlp no disponible"
   for (const pair of attempts) {
@@ -330,7 +330,7 @@ export default {
   command: ['play2', 'mp4', 'ytmp4', 'ytvideo', 'playvideo'],
   category: 'downloader',
   run: async ({ msg, sock, args }) => {
-    console.error('[ytvideo] build 117 HD')
+    console.error('[ytvideo] build 118 WA-safe 720p')
     try {
       if (!args[0]) {
         return msg.reply('《✧》 Por favor, menciona el nombre o URL del video que deseas descargar.')
@@ -348,12 +348,34 @@ export default {
           if (early?.length && isMp4(early)) {
             const fileName = 'video.mp4'
             const meta = 'Video de YouTube'
-            await sock.sendMessage(msg.chat, {
-              video: early,
-              mimetype: 'video/mp4',
-              fileName,
-              caption: meta
-            }, { quoted: msg })
+            const needCompress = early.length > MAX_SEND_BYTES
+            if (needCompress) {
+              await msg.reply(`《✧》 Pesa ${mb(early.length)} MB. Comprimiendo para WhatsApp…`)
+            }
+            const prepared = await prepareForWhatsApp(early, `${Date.now()}-early`, { forceCompress: needCompress })
+            let out = prepared.buffer
+            if (!out?.length || !isMp4(out)) {
+              throw new Error('No se pudo preparar el video para WhatsApp')
+            }
+            if (out.length > MAX_SEND_BYTES) {
+              return msg.reply(`《✧》 Aun comprimido pesa ${mb(out.length)} MB y WhatsApp no lo acepta (~64 MB).`)
+            }
+            try {
+              await sock.sendMessage(msg.chat, {
+                video: out,
+                mimetype: 'video/mp4',
+                fileName,
+                caption: meta
+              }, { quoted: msg })
+            } catch (e1) {
+              console.error('[ytvideo] video fail', e1)
+              await sock.sendMessage(msg.chat, {
+                document: out,
+                mimetype: 'video/mp4',
+                fileName,
+                caption: meta
+              }, { quoted: msg })
+            }
             return
           }
         } catch (e) {
@@ -380,16 +402,39 @@ export default {
 
       // HD primero con yt-dlp (<=1080)
       try {
-        await msg.reply('《✧》 Bajando en alta calidad (yt-dlp ≤1080p)…')
-        const hd = await downloadYoutubeWithYtDlp(url)
+        await msg.reply('《✧》 Bajando en calidad WhatsApp (yt-dlp ≤720p)…')
+                const hd = await downloadYoutubeWithYtDlp(url)
         if (hd?.length && isMp4(hd)) {
-          const meta = `🎬 *${title}* (HD)\nCanal: ${canal}\nDuración: ${duration || '?'}\nVistas: ${vistas}`
-          await sock.sendMessage(msg.chat, {
-            video: hd,
-            mimetype: 'video/mp4',
-            fileName: 'video-hd.mp4',
-            caption: meta
-          }, { quoted: msg })
+          const meta = `🎬 *${title}* (≤720p)\nCanal: ${canal}\nDuración: ${duration || '?'}\nVistas: ${vistas}`
+          const needCompress = hd.length > MAX_SEND_BYTES
+          if (needCompress) {
+            await msg.reply(`《✧》 Pesa ${mb(hd.length)} MB. Comprimiendo para WhatsApp…`)
+          }
+          const prepared = await prepareForWhatsApp(hd, `${Date.now()}-hd`, { forceCompress: needCompress })
+          let out = prepared.buffer
+          if (!out?.length || !isMp4(out)) {
+            throw new Error('No se pudo preparar el video HD para WhatsApp')
+          }
+          if (out.length > MAX_SEND_BYTES) {
+            return msg.reply(`《✧》 Aun comprimido pesa ${mb(out.length)} MB y WhatsApp no lo acepta (~64 MB).
+🔗 ${url}`)
+          }
+          try {
+            await sock.sendMessage(msg.chat, {
+              video: out,
+              mimetype: 'video/mp4',
+              fileName: 'video-hd.mp4',
+              caption: meta
+            }, { quoted: msg })
+          } catch (e1) {
+            console.error('[ytvideo] video fail', e1)
+            await sock.sendMessage(msg.chat, {
+              document: out,
+              mimetype: 'video/mp4',
+              fileName: 'video-hd.mp4',
+              caption: meta
+            }, { quoted: msg })
+          }
           return
         }
       } catch (e) {
