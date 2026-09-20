@@ -352,7 +352,7 @@ async function prepareForWhatsApp(inputBuf, baseName, { forceCompress = false } 
   }
 }
 
-async function descargarMp4async function descargarMp4(videoUrl, titleQuery, key) {
+async function descargarMp4(videoUrl, titleQuery, key) {
   const base = (typeof api !== 'undefined' && api?.url) ? api.url : 'https://api.alyacore.xyz'
   const queries = []
   const add = (q) => { if (q && !queries.includes(q)) queries.push(q) }
@@ -410,7 +410,7 @@ export default {
   command: ['play2', 'mp4', 'ytmp4', 'ytvideo', 'playvideo'],
   category: 'downloader',
   run: async ({ msg, sock, args }) => {
-    console.error('[ytvideo] build 119b HD-long AVC')
+    console.error('[ytvideo] build 120 HD-long AVC')
     try {
       if (!args[0]) {
         return msg.reply('《✧》 Por favor, menciona el nombre o URL del video que deseas descargar.')
