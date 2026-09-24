@@ -9,7 +9,9 @@ const MAX_SEND = 64 * 1024 * 1024 // tope seguro video/imagen en WhatsApp
 const MAX_DOC = 100 * 1024 * 1024 // si pesa más que MAX_SEND pero menos que esto → documento
 const MAX_MEDIA = 10
 const TMP_DIR = path.join(process.cwd(), 'tmp-dl')
-const UA = { 'User-Agent': 'Mozilla/5.0 (Luffy7-WhatsApp; x-downloader)' }
+// UA sin 'Mozilla': api.vxtwitter.com (Cloudflare) da 403 a UAs tipo navegador.
+// video.twimg.com / pbs.twimg.com aceptan cualquier UA, así que se usa el mismo para todo.
+const UA = { 'User-Agent': 'AndrewWife-Bot/1.1 (x-downloader)' }
 
 const HOSTS = '(?:www\\.|mobile\\.|m\\.)?(?:x|twitter|fxtwitter|vxtwitter|fixupx|fixvx|twittpr|girlcockx|stupidpenisx)\\.com'
 const STATUS_RE = new RegExp(`https?:\\/\\/${HOSTS}\\/(?:i\\/web\\/|i\\/|[A-Za-z0-9_]{1,20}\\/)?status(?:es)?\\/(\\d{1,25})`, 'i')
