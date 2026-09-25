@@ -1,5 +1,7 @@
 # Luffy7 — Monkey D. Luffy Bot MD
 
+Version **1.1.18** — nuevo `#google` / `#gg` / `#buscar` / `#googlesearch`: búsqueda web sin API key, top 5 resultados (título, resumen corto y link). Fuentes en orden: DuckDuckGo HTML → DuckDuckGo Lite → Bing (filtra resultados irrelevantes) → Wikipedia (es) → Marginalia, cada una con timeout. Ejemplo: `#google algebra de baldor`.
+
 Version **1.1.17** — fix `#x`: la API VxTwitter daba 403 por el User-Agent tipo navegador; ahora usa `AndrewWife-Bot/1.1 (x-downloader)` y el respaldo FxTwitter → VxTwitter vuelve a funcionar.
 
 Version **1.1.16** — nuevo `#x` / `#twitter` / `#xdownloader`: descarga videos, GIFs e imágenes de X/Twitter (API FxTwitter → VxTwitter → yt-dlp), mejor calidad que quepa en WhatsApp, >64 MB como documento.
