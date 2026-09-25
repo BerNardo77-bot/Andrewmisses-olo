@@ -1,7 +1,5 @@
 # Luffy7 — Monkey D. Luffy Bot MD
 
-Version **1.1.18** — nuevo `#terabox` / `#tb` / `#teraboxdl`: enlaces de TeraBox (terabox.com, 1024terabox.com, teraboxapp.com, terabox.app, 4funbox, mirrobox, nephobox, freeterabox, teraboxlink, terasharelink; `/s/…` o `?surl=`). Muestra nombre, tamaño y link directo; ≤90 MB lo envía (video si es MP4, si no documento), más de 90 MB solo info + link (misma regla que `#apk`). Carpetas: lista hasta 10 archivos. Link directo: variable opcional `TERABOX_COOKIE` (cookie `ndus` de TeraBox) → `TERABOX_API_URL` opcional → APIs públicas de respaldo.
-
 Version **1.1.17** — fix `#x`: la API VxTwitter daba 403 por el User-Agent tipo navegador; ahora usa `AndrewWife-Bot/1.1 (x-downloader)` y el respaldo FxTwitter → VxTwitter vuelve a funcionar.
 
 Version **1.1.16** — nuevo `#x` / `#twitter` / `#xdownloader`: descarga videos, GIFs e imágenes de X/Twitter (API FxTwitter → VxTwitter → yt-dlp), mejor calidad que quepa en WhatsApp, >64 MB como documento.
@@ -44,7 +42,6 @@ Proyecto independiente; no afiliado a WhatsApp Inc.
 | `/spotify` | `/sp` | Spotify |
 | `/mediafire` | `/mf` | MediaFire |
 | `/x` | `/twitter`, `/xdownloader`, `/xdl`, `/tw` | X/Twitter (video/imagen) |
-| `/terabox` | `/tb`, `/teraboxdl` | TeraBox (archivos, ≤90 MB se envían) |
 
 API in `settings.js` (`global.api`): key por defecto `LUFFY-FIX67`.
 
