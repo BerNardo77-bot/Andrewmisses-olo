@@ -24,6 +24,16 @@ Recursos actuales: **0.2 vCPU / 512 MB** · Volume `/data`
 - `PORT=3000`
 - `NODE_ENV=production`
 
+### Búsqueda web (`#google`) — variables opcionales
+
+Sin configurar nada, `#google` usa buscadores sin API key: DuckDuckGo → Seznam → Mwmbl → Marginalia → Bing → Wikipedia (en servidores DuckDuckGo y Bing suelen pedir captcha; se saltan solos). Si quieres resultados tipo Google/Brave desde el servidor, agrega **una** de estas (van primero cuando existen):
+
+| Variable | Valor |
+|---|---|
+| `GOOGLE_CSE_KEY` + `GOOGLE_CSE_CX` | API key y el ID del buscador de Google Programmable Search (Custom Search JSON API) |
+| `BRAVE_API_KEY` | Token de Brave Search API (https://brave.com/search/api/) |
+| `SEARCH_DISABLE` | (opcional) motores a desactivar, separados por coma: `duckduckgo,seznam,mwmbl,marginalia,bing` |
+
 ---
 
 ## #ytvideo (build 120 HD-long AVC) — 2026-09-20
